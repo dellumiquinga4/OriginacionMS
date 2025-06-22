@@ -13,6 +13,9 @@ import com.banquito.originacion.model.IdentificadorVehiculo;
 import com.banquito.originacion.model.Vehiculo;
 import com.banquito.originacion.repository.IdentificadorVehiculoRepository;
 import com.banquito.originacion.repository.VehiculoRepository;
+
+import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -69,7 +72,7 @@ public class VehiculoService {
      */
 
     @Transactional
-    public IdentificadorVehiculoDTO createIdentificador(IdentificadorVehiculoDTO dto) {
+    public IdentificadorVehiculoDTO createIdentificador(@Valid IdentificadorVehiculoDTO dto) {
         try {
             if (identificadorRepository.existsByVin(dto.getVin())) {
                 throw new CreateEntityException(
@@ -176,7 +179,7 @@ public class VehiculoService {
      */
 
     @Transactional
-    public VehiculoDTO createVehiculo(VehiculoDTO dto) {
+    public VehiculoDTO createVehiculo(@Valid VehiculoDTO dto) {
         try {
             Vehiculo entidad = vehiculoMapper.toModel(dto);
             entidad.setId(null);
