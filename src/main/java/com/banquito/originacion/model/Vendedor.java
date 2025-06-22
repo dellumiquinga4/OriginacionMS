@@ -34,7 +34,7 @@ public class Vendedor {
     @Column(name = "estado", nullable = false)
     private EstadoVendedorEnum estado;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     @ManyToOne(fetch = FetchType.LAZY)

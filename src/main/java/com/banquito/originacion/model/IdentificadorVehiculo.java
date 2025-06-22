@@ -26,7 +26,7 @@ public class IdentificadorVehiculo {
     @Column(name = "placa", length = 7, nullable = false, unique = true)
     private String placa;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     public IdentificadorVehiculo() {

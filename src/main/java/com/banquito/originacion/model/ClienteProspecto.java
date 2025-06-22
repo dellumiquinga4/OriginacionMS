@@ -50,7 +50,7 @@ public class ClienteProspecto {
     @Column(name = "estado", nullable = false)
     private EstadoClientesEnum estado;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     public ClienteProspecto() {

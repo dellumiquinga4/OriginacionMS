@@ -34,7 +34,7 @@ public class Concesionario {
     @Column(name = "estado", nullable = false)
     private EstadoConcesionarioEnum estado;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     public Concesionario() {

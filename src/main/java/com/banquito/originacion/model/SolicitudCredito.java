@@ -66,7 +66,7 @@ public class SolicitudCredito {
     @Column(name = "estado", nullable = false)
     private EstadoSolicitudEnum estado;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     @ManyToOne(fetch = FetchType.LAZY)

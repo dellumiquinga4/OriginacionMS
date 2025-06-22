@@ -28,7 +28,7 @@ public class TipoDocumento {
     @Column(name = "estado", nullable = false)
     private EstadoTiposDocumentoEnum estado;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     public TipoDocumento() {

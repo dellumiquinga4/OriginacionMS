@@ -30,7 +30,7 @@ public class DocumentoAdjunto {
     @Column(name = "fecha_cargado", nullable = false)
     private LocalDateTime fechaCargado;
 
-    @Column(name = "version", precision = 9, nullable = false)
+    @Version
     private Long version;
 
     @ManyToOne(fetch = FetchType.LAZY)
