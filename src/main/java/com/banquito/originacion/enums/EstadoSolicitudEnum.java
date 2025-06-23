@@ -5,7 +5,8 @@ public enum EstadoSolicitudEnum {
     EN_REVISION("EnRevision"),
     APROBADA("Aprobada"),
     RECHAZADA("Rechazada"),
-    CANCELADA("Cancelada");
+    CANCELADA("Cancelada"),
+    INSTRUMENTADA("Instrumentada");
 
     private final String valor;
 

@@ -3,7 +3,8 @@ package com.banquito.originacion.enums;
 public enum AccionAuditoriaEnum {
     INSERT("INSERT"),
     UPDATE("UPDATE"),
-    DELETE("DELETE");
+    DELETE("DELETE"),
+    SELECT("SELECT");
 
     private final String valor;
 
