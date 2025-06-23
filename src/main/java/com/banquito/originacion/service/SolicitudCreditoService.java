@@ -146,11 +146,6 @@ public class SolicitudCreditoService {
                 }
             }
             
-            // Asignar scoreInterno si es nulo (por defecto igual al scoreExterno)
-            if (solicitudDTO.getScoreInterno() == null) {
-                solicitudDTO.setScoreInterno(solicitudDTO.getScoreExterno());
-            }
-            
             // Convertimos a entidad y guardamos
             SolicitudCredito solicitud = solicitudMapper.toModel(solicitudDTO);
             solicitud.setId(null); // Aseguramos que sea nuevo

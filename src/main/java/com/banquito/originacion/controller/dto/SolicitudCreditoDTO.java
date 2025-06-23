@@ -53,9 +53,11 @@ public class SolicitudCreditoDTO {
     @Schema(description = "Valor de entrada del crédito", example = "5000.00")
     private BigDecimal entrada;
 
+    @NotNull(message = "El score interno es requerido")
     @Schema(description = "Puntuación de riesgo interno", example = "750.50")
     private BigDecimal scoreInterno;
 
+    @NotNull(message = "El score externo es requerido")
     @Schema(description = "Puntuación de riesgo externo", example = "680.25")
     private BigDecimal scoreExterno;
 
