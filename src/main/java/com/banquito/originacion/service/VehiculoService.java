@@ -1,9 +1,11 @@
 package com.banquito.originacion.service;
 
+import com.banquito.originacion.controller.dto.AuditoriaDTO;
 import com.banquito.originacion.controller.dto.IdentificadorVehiculoDTO;
 import com.banquito.originacion.controller.dto.VehiculoDTO;
 import com.banquito.originacion.controller.mapper.IdentificadorVehiculoMapper;
 import com.banquito.originacion.controller.mapper.VehiculoMapper;
+import com.banquito.originacion.enums.AccionAuditoriaEnum;
 import com.banquito.originacion.enums.EstadoVehiculoEnum;
 import com.banquito.originacion.exception.CreateEntityException;
 import com.banquito.originacion.exception.DeleteEntityException;
@@ -33,17 +35,20 @@ public class VehiculoService {
     private final IdentificadorVehiculoMapper identificadorMapper;
     private final VehiculoRepository vehiculoRepository;
     private final VehiculoMapper vehiculoMapper;
+    private final AuditoriaService auditoriaService;
 
     public VehiculoService(ConcesionarioRepository concesionarioRepository,
             IdentificadorVehiculoRepository identificadorRepository,
             IdentificadorVehiculoMapper identificadorMapper,
             VehiculoRepository vehiculoRepository,
-            VehiculoMapper vehiculoMapper) {
+            VehiculoMapper vehiculoMapper,
+            AuditoriaService auditoriaService) {
         this.concesionarioRepository = concesionarioRepository;
         this.identificadorRepository = identificadorRepository;
         this.identificadorMapper = identificadorMapper;
         this.vehiculoRepository = vehiculoRepository;
         this.vehiculoMapper = vehiculoMapper;
+        this.auditoriaService = auditoriaService;
     }
 
     // ------------------------------------------- Métodos para IdentificadorVehiculo -------------------------------------------
@@ -98,6 +103,12 @@ public class VehiculoService {
             entity.setId(null);
             entity.setVersion(null);
             IdentificadorVehiculo saved = identificadorRepository.save(entity);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("identificadores_vehiculos");
+            audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            auditoriaService.createAuditoria(audDto);
+
             return identificadorMapper.toDTO(saved);
 
         } catch (CreateEntityException e) {
@@ -215,6 +226,12 @@ public class VehiculoService {
             entidad.setId(null);
             entidad.setVersion(null);
             Vehiculo guardado = vehiculoRepository.save(entidad);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("vehiculos");
+            audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            auditoriaService.createAuditoria(audDto);
+
             return vehiculoMapper.toDTO(guardado);
 
         } catch (CreateEntityException e) {
@@ -256,6 +273,12 @@ public class VehiculoService {
             existente.setVersion(dto.getVersion());
 
             Vehiculo actualizado = vehiculoRepository.save(existente);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("vehiculos");
+            audDto.setAccion(AccionAuditoriaEnum.UPDATE);
+            auditoriaService.createAuditoria(audDto);
+
             return vehiculoMapper.toDTO(actualizado);
 
         } catch (ResourceNotFoundException | CreateEntityException e) {

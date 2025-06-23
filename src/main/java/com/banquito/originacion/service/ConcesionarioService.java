@@ -1,9 +1,11 @@
 package com.banquito.originacion.service;
 
+import com.banquito.originacion.controller.dto.AuditoriaDTO;
 import com.banquito.originacion.controller.dto.ConcesionarioDTO;
 import com.banquito.originacion.controller.dto.VendedorDTO;
 import com.banquito.originacion.controller.mapper.ConcesionarioMapper;
 import com.banquito.originacion.controller.mapper.VendedorMapper;
+import com.banquito.originacion.enums.AccionAuditoriaEnum;
 import com.banquito.originacion.enums.EstadoConcesionarioEnum;
 import com.banquito.originacion.enums.EstadoVendedorEnum;
 import com.banquito.originacion.exception.CreateEntityException;
@@ -30,20 +32,22 @@ public class ConcesionarioService {
     private final ConcesionarioMapper concesionarioMapper;
     private final VendedorRepository vendedorRepository;
     private final VendedorMapper vendedorMapper;
+    private final AuditoriaService auditoriaService;
 
     public ConcesionarioService(
             ConcesionarioRepository concesionarioRepository,
             ConcesionarioMapper concesionarioMapper,
             VendedorRepository vendedorRepository,
-            VendedorMapper vendedorMapper) {
+            VendedorMapper vendedorMapper,
+            AuditoriaService auditoriaService) {
         this.concesionarioRepository = concesionarioRepository;
         this.concesionarioMapper = concesionarioMapper;
         this.vendedorRepository = vendedorRepository;
         this.vendedorMapper = vendedorMapper;
+        this.auditoriaService = auditoriaService;
     }
 
-    // ------------------------------------------- Métodos para Concesionario
-    // -------------------------------------------
+    // ------------------------------------------- Métodos para Concesionario -------------------------------------------
 
     /**
      * Obtiene un concesionario por su ID.
@@ -138,6 +142,11 @@ public class ConcesionarioService {
             entity.setId(null);
             entity.setVersion(null);
             Concesionario saved = concesionarioRepository.save(entity);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("concesionarios");
+            audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            auditoriaService.createAuditoria(audDto);
             return concesionarioMapper.toDTO(saved);
 
         } catch (CreateEntityException e) {
@@ -177,6 +186,12 @@ public class ConcesionarioService {
             existing.setVersion(dto.getVersion());
 
             Concesionario updated = concesionarioRepository.save(existing);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("concesionarios");
+            audDto.setAccion(AccionAuditoriaEnum.UPDATE);
+            auditoriaService.createAuditoria(audDto);
+
             return concesionarioMapper.toDTO(updated);
 
         } catch (ResourceNotFoundException e) {
@@ -188,8 +203,7 @@ public class ConcesionarioService {
         }
     }
 
-    // ------------------------------------------- Métodos para Vendedores
-    // -------------------------------------------
+    // ------------------------------------------- Métodos para Vendedores -------------------------------------------
 
     /**
      * Obtiene un vendedor por su ID.
@@ -285,6 +299,12 @@ public class ConcesionarioService {
             entity.setId(null);
             entity.setVersion(null);
             Vendedor saved = vendedorRepository.save(entity);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("vendedores");
+            audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            auditoriaService.createAuditoria(audDto);
+
             return vendedorMapper.toDTO(saved);
 
         } catch (CreateEntityException e) {
@@ -326,6 +346,12 @@ public class ConcesionarioService {
             existing.setVersion(dto.getVersion());
 
             Vendedor updated = vendedorRepository.save(existing);
+
+            AuditoriaDTO audDto = new AuditoriaDTO();
+            audDto.setTabla("vendedores");
+            audDto.setAccion(AccionAuditoriaEnum.UPDATE);
+            auditoriaService.createAuditoria(audDto);
+
             return vendedorMapper.toDTO(updated);
 
         } catch (ResourceNotFoundException e) {
