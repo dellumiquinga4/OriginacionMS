@@ -39,8 +39,6 @@ public class ConcesionarioDTO {
     @Schema(description = "Estado del concesionario", example = "ACTIVO")
     private EstadoConcesionarioEnum estado;
 
-    @NotNull(message = "La versión es requerida")
-    @Min(value = 0, message = "La versión no puede ser negativa")
     @Schema(description = "Versión para control de concurrencia", example = "1")
     private Long version;
 } 

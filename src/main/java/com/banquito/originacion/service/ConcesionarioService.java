@@ -144,8 +144,9 @@ public class ConcesionarioService {
             Concesionario saved = concesionarioRepository.save(entity);
 
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("concesionarios");
+            audDto.setTabla(("concesionarios RAZON SOCIAL:" + dto.getRazonSocial()).substring(0, Math.min(40, ("concesionarios RAZON SOCIAL:" + dto.getRazonSocial()).length())));
             audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
             return concesionarioMapper.toDTO(saved);
 
@@ -188,8 +189,9 @@ public class ConcesionarioService {
             Concesionario updated = concesionarioRepository.save(existing);
 
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("concesionarios");
+            audDto.setTabla(("concesionarios RAZON SOCIAL:" + dto.getRazonSocial()).substring(0, Math.min(40, ("concesionarios RAZON SOCIAL:" + dto.getRazonSocial()).length())));
             audDto.setAccion(AccionAuditoriaEnum.UPDATE);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
 
             return concesionarioMapper.toDTO(updated);
@@ -301,8 +303,9 @@ public class ConcesionarioService {
             Vendedor saved = vendedorRepository.save(entity);
 
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("vendedores");
+            audDto.setTabla(("vendedores Nombre:" + dto.getNombre()).substring(0, Math.min(40, ("vendedores Nombre:" + dto.getNombre()).length())));
             audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
 
             return vendedorMapper.toDTO(saved);
@@ -348,8 +351,9 @@ public class ConcesionarioService {
             Vendedor updated = vendedorRepository.save(existing);
 
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("vendedores");
+            audDto.setTabla(("vendedores Nombre:" + dto.getNombre()).substring(0, Math.min(40, ("vendedores Nombre:" + dto.getNombre()).length())));
             audDto.setAccion(AccionAuditoriaEnum.UPDATE);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
 
             return vendedorMapper.toDTO(updated);

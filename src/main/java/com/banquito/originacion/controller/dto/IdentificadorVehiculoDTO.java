@@ -30,8 +30,6 @@ public class IdentificadorVehiculoDTO {
     @Schema(description = "Placa del vehículo", example = "ABC1234", maxLength = 7)
     private String placa;
 
-    @NotNull(message = "La versión es requerida")
-    @Min(value = 0, message = "La versión no puede ser negativa")
     @Schema(description = "Versión para control de concurrencia", example = "1")
     private Long version;
 } 

@@ -39,8 +39,6 @@ public class VendedorDTO {
     @Schema(description = "Estado del vendedor", example = "ACTIVO")
     private EstadoVendedorEnum estado;
 
-    @NotNull(message = "La versión es requerida")
-    @Min(value = 0, message = "La versión no puede ser negativa")
     @Schema(description = "Versión para control de concurrencia", example = "1")
     private Long version;
 } 

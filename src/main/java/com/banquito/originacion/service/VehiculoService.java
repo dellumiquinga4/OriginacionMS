@@ -105,8 +105,9 @@ public class VehiculoService {
             IdentificadorVehiculo saved = identificadorRepository.save(entity);
 
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("identificadores_vehiculos");
+            audDto.setTabla("identificadores_vehiculos VIN:" + dto.getVin().substring(dto.getVin().length() - 4));
             audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
 
             return identificadorMapper.toDTO(saved);
@@ -227,9 +228,17 @@ public class VehiculoService {
             entidad.setVersion(null);
             Vehiculo guardado = vehiculoRepository.save(entidad);
 
+            // Obtener la placa desde el identificador de vehículo
+            String placa = "";
+            if (dto.getIdIdentificadorVehiculo() != null) {
+                placa = identificadorRepository.findById(dto.getIdIdentificadorVehiculo())
+                        .map(identificador -> identificador.getPlaca())
+                        .orElse("");
+            }
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("vehiculos");
+            audDto.setTabla("vehiculos matricula:" + placa);
             audDto.setAccion(AccionAuditoriaEnum.INSERT);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
 
             return vehiculoMapper.toDTO(guardado);
@@ -274,9 +283,17 @@ public class VehiculoService {
 
             Vehiculo actualizado = vehiculoRepository.save(existente);
 
+            // Obtener la placa desde el identificador de vehículo para update
+            String placaUpdate = "";
+            if (dto.getIdIdentificadorVehiculo() != null) {
+                placaUpdate = identificadorRepository.findById(dto.getIdIdentificadorVehiculo())
+                        .map(identificador -> identificador.getPlaca())
+                        .orElse("");
+            }
             AuditoriaDTO audDto = new AuditoriaDTO();
-            audDto.setTabla("vehiculos");
+            audDto.setTabla("vehiculos matricula:" + placaUpdate);
             audDto.setAccion(AccionAuditoriaEnum.UPDATE);
+            audDto.setFechaHora(java.time.LocalDateTime.now());
             auditoriaService.createAuditoria(audDto);
 
             return vehiculoMapper.toDTO(actualizado);
