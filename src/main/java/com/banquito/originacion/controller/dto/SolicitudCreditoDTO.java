@@ -27,10 +27,10 @@ public class SolicitudCreditoDTO {
     @Schema(description = "Identificador del vehículo", example = "1")
     private Integer idVehiculo;
 
-    // @NotNull(message = "El ID del vendedor es requerido")
-    // @Min(value = 1, message = "El ID del vendedor debe ser mayor a 0")
-    // @Schema(description = "Identificador del vendedor", example = "1")
-    // private Integer idVendedor;
+    @NotNull(message = "El ID del vendedor es requerido")
+    @Min(value = 1, message = "El ID del vendedor debe ser mayor a 0")
+    @Schema(description = "Identificador del vendedor", example = "1")
+    private Integer idVendedor;
 
     @Schema(description = "Número único de la solicitud", example = "SOL-2024-001", maxLength = 50)
     private String numeroSolicitud;

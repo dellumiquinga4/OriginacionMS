@@ -14,6 +14,7 @@ import com.banquito.originacion.model.Vehiculo;
 import com.banquito.originacion.repository.ClienteProspectoRepository;
 import com.banquito.originacion.repository.SolicitudCreditoRepository;
 import com.banquito.originacion.repository.VehiculoRepository;
+import com.banquito.originacion.repository.VendedorRepository;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ public class SolicitudCreditoService {
     private final AuditoriaService auditoriaService;
     private final ClienteProspectoRepository clienteProspectoRepository;
     private final VehiculoRepository vehiculoRepository;
+    private final VendedorRepository vendedorRepository;
     
     // Tasas de interés según perfil de riesgo
     private static final Map<String, BigDecimal> TASAS_POR_PERFIL = new HashMap<>();
@@ -58,12 +60,14 @@ public class SolicitudCreditoService {
                                   SolicitudCreditoMapper solicitudMapper,
                                   AuditoriaService auditoriaService,
                                   ClienteProspectoRepository clienteProspectoRepository,
-                                  VehiculoRepository vehiculoRepository) {
+                                  VehiculoRepository vehiculoRepository,
+                                  VendedorRepository vendedorRepository) {
         this.solicitudRepository = solicitudRepository;
         this.solicitudMapper = solicitudMapper;
         this.auditoriaService = auditoriaService;
         this.clienteProspectoRepository = clienteProspectoRepository;
         this.vehiculoRepository = vehiculoRepository;
+        this.vendedorRepository = vendedorRepository;
     }
 
     // === CREACIÓN Y GESTIÓN ===
@@ -81,6 +85,14 @@ public class SolicitudCreditoService {
     public SolicitudCreditoDTO crearSolicitud(@Valid SolicitudCreditoDTO solicitudDTO) {
         log.info("Creando nueva solicitud de crédito");
         try {
+            // Validar que el vendedor exista
+            if (solicitudDTO.getIdVendedor() == null) {
+                throw new CreateEntityException("SolicitudCredito", "El ID del vendedor es requerido");
+            }
+            if (!vendedorRepository.existsById(solicitudDTO.getIdVendedor())) {
+                throw new CreateEntityException("SolicitudCredito", "El vendedor con id=" + solicitudDTO.getIdVendedor() + " no existe");
+            }
+            
             // Generamos número único de solicitud
             solicitudDTO.setNumeroSolicitud(generarNumeroUnicoSolicitud());
             

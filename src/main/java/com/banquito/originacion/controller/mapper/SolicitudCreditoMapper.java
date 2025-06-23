@@ -16,7 +16,7 @@ public class SolicitudCreditoMapper {
         dto.setId(model.getId());
         dto.setIdClienteProspecto(model.getIdClienteProspecto());
         dto.setIdVehiculo(model.getIdVehiculo());
-        //dto.setIdVendedor(model.getIdVendedor());
+        dto.setIdVendedor(model.getIdVendedor());
         dto.setNumeroSolicitud(model.getNumeroSolicitud());
         dto.setMontoSolicitado(model.getMontoSolicitado());
         dto.setPlazoMeses(model.getPlazoMeses());
@@ -43,7 +43,7 @@ public class SolicitudCreditoMapper {
         model.setId(dto.getId());
         model.setIdClienteProspecto(dto.getIdClienteProspecto());
         model.setIdVehiculo(dto.getIdVehiculo());
-        //model.setIdVendedor(dto.getIdVendedor());
+        model.setIdVendedor(dto.getIdVendedor());
         model.setNumeroSolicitud(dto.getNumeroSolicitud());
         model.setMontoSolicitado(dto.getMontoSolicitado());
         model.setPlazoMeses(dto.getPlazoMeses());

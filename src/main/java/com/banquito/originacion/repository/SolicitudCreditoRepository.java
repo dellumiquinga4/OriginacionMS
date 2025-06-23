@@ -62,4 +62,9 @@ public interface SolicitudCreditoRepository extends JpaRepository<SolicitudCredi
      * Verifica si existe una solicitud con el número dado
      */
     boolean existsByNumeroSolicitud(String numeroSolicitud);
+
+    /**
+     * Busca solicitudes por vendedor
+     */
+    List<SolicitudCredito> findByIdVendedor(Integer idVendedor);
 } 

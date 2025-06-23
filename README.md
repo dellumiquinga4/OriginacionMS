@@ -451,32 +451,9 @@ http://localhost:8080/v1
 
 ## 3. DocumentacionController
 
-### Cargar documento (POST)
-- **URL:** `POST /documentos`
-- **form-data:**
-  - idSolicitud: 1
-  - archivo: (adjuntar archivo PDF)
-  - idTipoDocumento: 1
+### 1. Configurar y gestionar tipos de documento
 
-### Registrar documentos firmados (POST)
-- **URL:** `POST /documentos/firmados`
-- **form-data:**
-  - idSolicitud: 1
-  - documentos: (adjuntar uno o varios archivos PDF)
-
-### Listar documentos por solicitud (GET)
-- **URL:** `GET /documentos/solicitud/{idSolicitud}`
-
-### Obtener documento por ID (GET)
-- **URL:** `GET /documentos/{idDocumento}`
-
-### Eliminar documento (DELETE)
-- **URL:** `DELETE /documentos/{idDocumento}`
-
-### Verificar completitud documental (GET)
-- **URL:** `GET /documentos/solicitud/{idSolicitud}/completitud`
-
-### Configurar tipo de documento (POST)
+#### Crear tipo de documento (POST)
 - **URL:** `POST /tipos-documentos`
 - **Body (JSON):**
 ```json
@@ -487,17 +464,46 @@ http://localhost:8080/v1
 }
 ```
 
-### Obtener tipos de documentos obligatorios (GET)
+#### Obtener tipos de documentos obligatorios (GET)
 - **URL:** `GET /tipos-documentos/obligatorios`
 
-### Obtener tipos de documentos por categoría (GET)
+#### Obtener tipos de documentos por categoría (GET)
 - **URL:** `GET /tipos-documentos/categoria/{categoria}`
 
-### Activar tipo de documento (PATCH)
+#### Activar tipo de documento (PATCH)
 - **URL:** `PATCH /tipos-documentos/{id}/activar`
 
-### Desactivar tipo de documento (PATCH)
+#### Desactivar tipo de documento (PATCH)
 - **URL:** `PATCH /tipos-documentos/{id}/desactivar`
+
+---
+
+### 2. Gestionar documentos adjuntos
+
+#### Cargar documento (POST)
+- **URL:** `POST /documentos`
+- **form-data:**
+  - idSolicitud: 1
+  - archivo: (adjuntar archivo PDF)
+  - idTipoDocumento: 1
+
+#### Registrar documentos firmados (POST)
+- **URL:** `POST /documentos/firmados`
+- **form-data:**
+  - idSolicitud: 1
+  - documentos: (adjuntar uno o varios archivos PDF)
+
+#### Listar documentos por solicitud (GET)
+- **URL:** `GET /documentos/solicitud/{idSolicitud}`
+
+#### Obtener documento por ID (GET)
+- **URL:** `GET /documentos/{idDocumento}`
+
+#### Eliminar documento (DELETE)
+- **URL:** `DELETE /documentos/{idDocumento}`
+
+#### Verificar completitud documental (GET)
+- **URL:** `GET /documentos/solicitud/{idSolicitud}/completitud`
 
 ---
 

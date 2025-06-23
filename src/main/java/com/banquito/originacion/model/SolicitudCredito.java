@@ -66,6 +66,9 @@ public class SolicitudCredito {
     @Version
     private Long version;
 
+    @Column(name = "id_vendedor", nullable = false)
+    private Integer idVendedor;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente_prospecto", referencedColumnName = "id_cliente_prospecto", insertable = false, updatable = false)
     private ClienteProspecto clienteProspecto;
@@ -73,6 +76,10 @@ public class SolicitudCredito {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_vehiculo", referencedColumnName = "id_vehiculo", insertable = false, updatable = false)
     private Vehiculo vehiculo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_vendedor", referencedColumnName = "id_vendedor", insertable = false, updatable = false)
+    private Vendedor vendedor;
 
     public SolicitudCredito() {
     }
