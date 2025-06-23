@@ -355,26 +355,7 @@ http://localhost:8080/v1
 
 ### Obtener todos los clientes prospecto (GET)
 - **URL:** `GET /clientes-prospectos`
-- **Respuesta:**
-```json
-[
-  {
-    "id": 1,
-    "cedula": "0123456789",
-    "nombre": "Juan",
-    "apellido": "Pérez",
-    "email": "juan.perez@email.com",
-    "telefono": "0999999999",
-    "direccion": "Av. Siempre Viva 123",
-    "actividadEconomica": "Empleado",
-    "ingresos": 1200.00,
-    "egresos": 400.00,
-    "estado": "PROSPECTO",
-    "version": 0
-  }
-  // ... más clientes
-]
-```
+
 
 ### Obtener cliente prospecto por cédula (GET)
 - **URL:** `GET /clientes-prospectos/cedula/{cedula}`
@@ -382,7 +363,7 @@ http://localhost:8080/v1
 ### Validar información de un cliente (GET)
 - **URL:** `GET /clientes-prospectos/validar/{cedula}`
 
-### Actualizar información financiera (PUT)
+### Actualizar información financiera de un cliente prospecto (PUT)
 - **URL:** `PUT /clientes-prospectos/{id}/financiera?ingresos=1500&egresos=500`
 
 ### Clasificar cliente (GET)
@@ -401,8 +382,6 @@ http://localhost:8080/v1
 ### Listar todas las solicitudes de crédito (GET)
 - **URL:** `GET /solicitudes-credito`
 
-```
-
 ### Crear solicitud de crédito (POST)
 - **URL:** `POST /solicitudes-credito`
 - **Body (JSON):**
@@ -412,7 +391,8 @@ http://localhost:8080/v1
   "idVehiculo": 1,
   "entrada": 2000.00,
   "plazoMeses": 36,
-  "scoreExterno": 700.00
+  "scoreExterno": 700.00,
+  "idVendedor": 1
 }
 ```
 
@@ -437,7 +417,8 @@ http://localhost:8080/v1
   "idVehiculo": 1,
   "entrada": 2500.00,
   "plazoMeses": 48,
-  "scoreExterno": 720.00
+  "scoreExterno": 720.00,
+  "idVendedor": 1
 }
 ```
 

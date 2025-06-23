@@ -34,8 +34,7 @@ public class DocumentoAdjuntoDTO {
     @Schema(description = "Fecha y hora cuando se cargó el documento", example = "2024-01-15T14:30:00")
     private LocalDateTime fechaCargado;
 
-    @NotNull(message = "La versión es requerida")
-    @Min(value = 0, message = "La versión no puede ser negativa")
+    
     @Schema(description = "Versión para control de concurrencia", example = "1")
     private Long version;
 } 

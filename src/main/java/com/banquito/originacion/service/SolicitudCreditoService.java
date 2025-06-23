@@ -179,53 +179,51 @@ public class SolicitudCreditoService {
     public SolicitudCreditoDTO actualizarSolicitud(Integer id, @Valid SolicitudCreditoDTO solicitudDTO) {
         log.info("Actualizando solicitud de crédito con id: {}", id);
         try {
-            // Verificar existencia
+            // Recuperar la entidad original
             SolicitudCredito solicitudExistente = solicitudRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada con id: " + id));
-            
+
             // Validar si puede modificarse según estado
             if (!puedeModificarse(solicitudExistente.getEstado())) {
                 throw new UpdateEntityException("SolicitudCredito", 
                         "No se puede modificar una solicitud en estado " + solicitudExistente.getEstado());
             }
-            
-            // Preservar datos que no deben cambiarse
-            solicitudDTO.setId(id);
-            solicitudDTO.setNumeroSolicitud(solicitudExistente.getNumeroSolicitud());
-            
-            // Calculamos monto solicitado basado en valor del vehículo y entrada
+
+            // Actualizar solo los campos permitidos
+            solicitudExistente.setIdClienteProspecto(solicitudDTO.getIdClienteProspecto());
+            solicitudExistente.setIdVehiculo(solicitudDTO.getIdVehiculo());
+            solicitudExistente.setEntrada(solicitudDTO.getEntrada());
+            solicitudExistente.setPlazoMeses(solicitudDTO.getPlazoMeses());
+            solicitudExistente.setScoreExterno(solicitudDTO.getScoreExterno());
+            solicitudExistente.setIdVendedor(solicitudDTO.getIdVendedor());
+
+            // Recalcular valores automáticos
             if (solicitudDTO.getIdVehiculo() != null) {
                 Vehiculo vehiculo = vehiculoRepository.findById(solicitudDTO.getIdVehiculo())
                     .orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado con id: " + solicitudDTO.getIdVehiculo()));
-                
                 BigDecimal entrada = solicitudDTO.getEntrada() != null ? solicitudDTO.getEntrada() : BigDecimal.ZERO;
                 BigDecimal montoSolicitado = vehiculo.getValor().subtract(entrada);
-                
-                // Validar que el monto solicitado no exceda el 80% del valor del vehículo
                 BigDecimal montoMaximo = vehiculo.getValor().multiply(PORCENTAJE_MAXIMO_VEHICULO);
                 if (montoSolicitado.compareTo(montoMaximo) > 0) {
                     log.warn("Monto solicitado {} excede el 80% del valor del vehículo {}", montoSolicitado, montoMaximo);
                     montoSolicitado = montoMaximo;
                 }
-                
-                solicitudDTO.setMontoSolicitado(montoSolicitado);
+                solicitudExistente.setMontoSolicitado(montoSolicitado);
             }
-            
-            // Recalculamos valores automáticos
+
             String perfilRiesgo = determinarPerfilRiesgo(solicitudDTO.getScoreExterno());
             BigDecimal tasaAnual = calcularTasaSegunPerfil(perfilRiesgo);
-            solicitudDTO.setTasaAnual(tasaAnual);
-            
+            solicitudExistente.setTasaAnual(tasaAnual);
+
             BigDecimal cuotaMensual = calcularCuotaMensual(
-                    solicitudDTO.getMontoSolicitado(),
+                    solicitudExistente.getMontoSolicitado(),
                     tasaAnual,
-                    solicitudDTO.getPlazoMeses());
-            solicitudDTO.setCuotaMensual(cuotaMensual);
-            
-            BigDecimal totalPagar = cuotaMensual.multiply(new BigDecimal(solicitudDTO.getPlazoMeses()));
-            solicitudDTO.setTotalPagar(totalPagar);
-            
-            // Recalcular relación cuota/ingreso si tenemos acceso al cliente
+                    solicitudExistente.getPlazoMeses());
+            solicitudExistente.setCuotaMensual(cuotaMensual);
+
+            BigDecimal totalPagar = cuotaMensual.multiply(new BigDecimal(solicitudExistente.getPlazoMeses()));
+            solicitudExistente.setTotalPagar(totalPagar);
+
             if (solicitudDTO.getIdClienteProspecto() != null) {
                 ClienteProspecto cliente = clienteProspectoRepository.findById(solicitudDTO.getIdClienteProspecto())
                     .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado con id: " + solicitudDTO.getIdClienteProspecto()));
@@ -233,17 +231,16 @@ public class SolicitudCreditoService {
                     BigDecimal ingresoNeto = cliente.getIngresos().subtract(cliente.getEgresos() != null ? cliente.getEgresos() : BigDecimal.ZERO);
                     BigDecimal relacionCuotaIngreso = cuotaMensual.divide(ingresoNeto, 4, RoundingMode.HALF_UP)
                         .multiply(new BigDecimal("100"));
-                    solicitudDTO.setRelacionCuotaIngreso(relacionCuotaIngreso);
+                    solicitudExistente.setRelacionCuotaIngreso(relacionCuotaIngreso);
                 }
             }
-            
-            // Actualizar entidad
-            SolicitudCredito solicitudActualizada = solicitudMapper.toModel(solicitudDTO);
-            SolicitudCredito guardada = solicitudRepository.save(solicitudActualizada);
-            
+
+            // Guardar la entidad actualizada
+            SolicitudCredito guardada = solicitudRepository.save(solicitudExistente);
+
             // Registrar auditoría
             registrarAuditoria("solicitudes_creditos", AccionAuditoriaEnum.UPDATE);
-            
+
             return solicitudMapper.toDTO(guardada);
         } catch (ResourceNotFoundException e) {
             throw e;

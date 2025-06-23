@@ -69,8 +69,8 @@ public class ClienteProspectoDTO {
     @Schema(description = "Estado del cliente en el sistema", example = "ACTIVO")
     private EstadoClientesEnum estado;
 
-    @NotNull(message = "La versión es requerida")
-    @Min(value = 0, message = "La versión no puede ser negativa")
+    
+  
     @Schema(description = "Versión para control de concurrencia", example = "1")
     private Long version;
 } 
