@@ -11,6 +11,7 @@ import com.banquito.originacion.exception.ResourceNotFoundException;
 import com.banquito.originacion.exception.UpdateEntityException;
 import com.banquito.originacion.model.IdentificadorVehiculo;
 import com.banquito.originacion.model.Vehiculo;
+import com.banquito.originacion.repository.ConcesionarioRepository;
 import com.banquito.originacion.repository.IdentificadorVehiculoRepository;
 import com.banquito.originacion.repository.VehiculoRepository;
 
@@ -27,15 +28,18 @@ import java.util.stream.Collectors;
 @Validated
 public class VehiculoService {
 
+    private final ConcesionarioRepository concesionarioRepository;
     private final IdentificadorVehiculoRepository identificadorRepository;
     private final IdentificadorVehiculoMapper identificadorMapper;
     private final VehiculoRepository vehiculoRepository;
     private final VehiculoMapper vehiculoMapper;
 
-    public VehiculoService(IdentificadorVehiculoRepository identificadorRepository,
+    public VehiculoService(ConcesionarioRepository concesionarioRepository,
+            IdentificadorVehiculoRepository identificadorRepository,
             IdentificadorVehiculoMapper identificadorMapper,
             VehiculoRepository vehiculoRepository,
             VehiculoMapper vehiculoMapper) {
+        this.concesionarioRepository = concesionarioRepository;
         this.identificadorRepository = identificadorRepository;
         this.identificadorMapper = identificadorMapper;
         this.vehiculoRepository = vehiculoRepository;
@@ -142,7 +146,7 @@ public class VehiculoService {
     }
 
     /**
-     * Obtiene todos los vehículos de un concesionario dado.
+     * Obtiene vehículos por estado (ACTIVO / INACTIVO).
      */
 
     @Transactional(readOnly = true)
@@ -175,21 +179,48 @@ public class VehiculoService {
     }
 
     /**
+     * Obtiene un vehículo por su identificador.
+     */
+    @Transactional(readOnly = true)
+    public VehiculoDTO findVehiculoByIdentificador(Integer idIdentificador) {
+        Vehiculo v = vehiculoRepository.findByIdIdentificadorVehiculo(idIdentificador)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Vehículo no encontrado con identificador=" + idIdentificador));
+        return vehiculoMapper.toDTO(v);
+    }
+
+    /**
      * Crea un nuevo vehículo.
      */
 
     @Transactional
     public VehiculoDTO createVehiculo(@Valid VehiculoDTO dto) {
         try {
+            if (!concesionarioRepository.existsById(dto.getIdConcesionario())) {
+                throw new CreateEntityException("Vehiculo",
+                        "Concesionario no existe con id=" + dto.getIdConcesionario());
+            }
+            if (!identificadorRepository.existsById(dto.getIdIdentificadorVehiculo())) {
+                throw new CreateEntityException("Vehiculo",
+                        "IdentificadorVehiculo no existe con id=" + dto.getIdIdentificadorVehiculo());
+            }
+            if (vehiculoRepository.findByIdIdentificadorVehiculo(dto.getIdIdentificadorVehiculo()).isPresent()) {
+                throw new CreateEntityException(
+                        "Vehiculo",
+                        "El identificador de vehículo con id=" + dto.getIdIdentificadorVehiculo()
+                                + " ya está asignado");
+            }
+
             Vehiculo entidad = vehiculoMapper.toModel(dto);
             entidad.setId(null);
             entidad.setVersion(null);
             Vehiculo guardado = vehiculoRepository.save(entidad);
             return vehiculoMapper.toDTO(guardado);
 
+        } catch (CreateEntityException e) {
+            throw e;
         } catch (Exception e) {
-            throw new CreateEntityException(
-                    "Vehiculo",
+            throw new CreateEntityException("Vehiculo",
                     "Error al crear el vehículo. Detalle: " + e.getMessage());
         }
     }
@@ -199,11 +230,19 @@ public class VehiculoService {
      */
 
     @Transactional
-    public VehiculoDTO updateVehiculo(Integer id, VehiculoDTO dto) {
+    public VehiculoDTO updateVehiculo(Integer id, @Valid VehiculoDTO dto) {
         try {
             Vehiculo existente = vehiculoRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Vehículo no encontrado con id=" + id));
+                    .orElseThrow(() -> new ResourceNotFoundException("Vehículo no encontrado con id=" + id));
+
+            if (!concesionarioRepository.existsById(dto.getIdConcesionario())) {
+                throw new CreateEntityException("Vehiculo",
+                        "Concesionario no existe con id=" + dto.getIdConcesionario());
+            }
+            if (!identificadorRepository.existsById(dto.getIdIdentificadorVehiculo())) {
+                throw new CreateEntityException("Vehiculo",
+                        "IdentificadorVehiculo no existe con id=" + dto.getIdIdentificadorVehiculo());
+            }
 
             existente.setIdConcesionario(dto.getIdConcesionario());
             existente.setIdIdentificadorVehiculo(dto.getIdIdentificadorVehiculo());
@@ -219,11 +258,10 @@ public class VehiculoService {
             Vehiculo actualizado = vehiculoRepository.save(existente);
             return vehiculoMapper.toDTO(actualizado);
 
-        } catch (ResourceNotFoundException e) {
-            throw e;
+        } catch (ResourceNotFoundException | CreateEntityException e) {
+            throw e; // re-lanzar sin envolver
         } catch (Exception e) {
-            throw new UpdateEntityException(
-                    "Vehiculo",
+            throw new UpdateEntityException("Vehiculo",
                     "Error al actualizar el vehículo. Detalle: " + e.getMessage());
         }
     }
