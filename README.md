@@ -453,6 +453,9 @@ http://localhost:8080/v1
 
 ### 1. Configurar y gestionar tipos de documento
 
+#### Listar todos los tipos de documento (GET)
+- **URL:** `GET /tipos-documentos`
+
 #### Crear tipo de documento (POST)
 - **URL:** `POST /tipos-documentos`
 - **Body (JSON):**
@@ -460,7 +463,8 @@ http://localhost:8080/v1
 {
   "nombre": "Contrato",
   "descripcion": "Contrato obligatorio de crédito",
-  "estado": "ACTIVO"
+  "estado": "ACTIVO",
+  "version": 0
 }
 ```
 
@@ -479,6 +483,9 @@ http://localhost:8080/v1
 ---
 
 ### 2. Gestionar documentos adjuntos
+
+#### Listar todos los documentos adjuntos (GET)
+- **URL:** `GET /documentos`
 
 #### Cargar documento (POST)
 - **URL:** `POST /documentos`

@@ -93,4 +93,14 @@ public class DocumentacionController {
         log.info("Obteniendo tipos de documentos por categoría: {}", categoria);
         return ResponseEntity.ok(documentacionService.obtenerTiposPorCategoria(categoria));
     }
+
+    @GetMapping("/tipos-documentos")
+    public ResponseEntity<List<TipoDocumentoDTO>> listarTodosTiposDocumento() {
+        return ResponseEntity.ok(documentacionService.listarTodosTiposDocumento());
+    }
+
+    @GetMapping("/documentos")
+    public ResponseEntity<List<DocumentoAdjuntoDTO>> listarTodosDocumentos() {
+        return ResponseEntity.ok(documentacionService.listarTodosDocumentos());
+    }
 } 

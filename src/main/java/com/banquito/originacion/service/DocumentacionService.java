@@ -560,4 +560,16 @@ public class DocumentacionService {
         audDto.setFechaHora(LocalDateTime.now());
         auditoriaService.createAuditoria(audDto);
     }
+
+    public List<TipoDocumentoDTO> listarTodosTiposDocumento() {
+        return tipoDocumentoRepository.findAll().stream()
+                .map(tipoDocumentoMapper::toDTO)
+                .toList();
+    }
+
+    public List<DocumentoAdjuntoDTO> listarTodosDocumentos() {
+        return documentoRepository.findAll().stream()
+                .map(documentoMapper::toDTO)
+                .toList();
+    }
 } 
