@@ -336,8 +336,8 @@ public class SolicitudCreditoService {
             BigDecimal tasaAnual = calcularTasaSegunPerfil(perfilRiesgo);
             
             // Generar escenarios
-            
-            // Escenario 1: Con entrada estándar del 20%
+
+            // Escenario 1: Con entrada estándar del 20% y plazo base
             BigDecimal entrada = montoVehiculo.multiply(PORCENTAJE_ENTRADA_ESTANDAR);
             BigDecimal montoCredito = montoVehiculo.subtract(entrada);
             Map<String, Object> escenarioEntrada = generarEscenario(
@@ -345,16 +345,27 @@ public class SolicitudCreditoService {
                     plazoMaximo, cuotaMaxima, ingresoNeto);
             escenarios.add(escenarioEntrada);
             
-            // Escenario 2: Sin entrada
+            // Escenario 2: Sin entrada (máximo financiable 80%) y plazo base
             Map<String, Object> escenarioSinEntrada = generarEscenario(
-                    "Sin entrada", montoMaximoFinanciable, BigDecimal.ZERO, tasaAnual, 
+                    "Sin entrada (máximo 80% del valor)", montoMaximoFinanciable, BigDecimal.ZERO, tasaAnual, 
                     plazoMaximo, cuotaMaxima, ingresoNeto);
+            
+            // Agregar advertencia específica sobre el límite de financiamiento
+            if (escenarioSinEntrada.containsKey("advertencia")) {
+                String advertenciaActual = (String) escenarioSinEntrada.get("advertencia");
+                escenarioSinEntrada.put("advertencia", advertenciaActual + " La solicitud excede el 80% máximo financiable. Se requiere entrada mínima del 20%.");
+            } else {
+                escenarioSinEntrada.put("advertencia", "La solicitud excede el 80% máximo financiable. Se requiere entrada mínima del 20%.");
+            }
+            
             escenarios.add(escenarioSinEntrada);
             
-            // Escenario 3: Plazo máximo para menor cuota
+            // Escenario 3: Plazo máximo extendido para lograr menor cuota mensual
+            // Típicamente los créditos vehiculares pueden extenderse hasta 60 o 72 meses como máximo
+            Integer plazoExtendido = Math.min(72, plazoMaximo + 24); // Extendemos el plazo en 2 años, máximo 72 meses
             Map<String, Object> escenarioPlazoMaximo = generarEscenario(
-                    "Plazo máximo", montoCredito, entrada, tasaAnual, 
-                    plazoMaximo, cuotaMaxima, ingresoNeto);
+                    "Plazo máximo para menor cuota", montoCredito, entrada, tasaAnual, 
+                    plazoExtendido, cuotaMaxima, ingresoNeto);
             escenarios.add(escenarioPlazoMaximo);
             
             resultado.put("montoVehiculo", montoVehiculo);
@@ -409,8 +420,8 @@ public class SolicitudCreditoService {
             BigDecimal tasaAnual = calcularTasaSegunPerfil(perfilRiesgo);
             
             // Generar escenarios
-            
-            // Escenario 1: Con entrada estándar del 20%
+
+            // Escenario 1: Con entrada estándar del 20% y plazo base
             BigDecimal entrada = montoVehiculo.multiply(PORCENTAJE_ENTRADA_ESTANDAR);
             BigDecimal montoCredito = montoVehiculo.subtract(entrada);
             Map<String, Object> escenarioEntrada = generarEscenario(
@@ -418,16 +429,27 @@ public class SolicitudCreditoService {
                     plazoMaximo, cuotaMaxima, ingresoNeto);
             escenarios.add(escenarioEntrada);
             
-            // Escenario 2: Sin entrada
+            // Escenario 2: Sin entrada (máximo financiable 80%) y plazo base
             Map<String, Object> escenarioSinEntrada = generarEscenario(
-                    "Sin entrada", montoMaximoFinanciable, BigDecimal.ZERO, tasaAnual, 
+                    "Sin entrada (máximo 80% del valor)", montoMaximoFinanciable, BigDecimal.ZERO, tasaAnual, 
                     plazoMaximo, cuotaMaxima, ingresoNeto);
+                
+            // Agregar advertencia específica sobre el límite de financiamiento
+            if (escenarioSinEntrada.containsKey("advertencia")) {
+                String advertenciaActual = (String) escenarioSinEntrada.get("advertencia");
+                escenarioSinEntrada.put("advertencia", advertenciaActual + " La solicitud excede el 80% máximo financiable. Se requiere entrada mínima del 20%.");
+            } else {
+                escenarioSinEntrada.put("advertencia", "La solicitud excede el 80% máximo financiable. Se requiere entrada mínima del 20%.");
+            }
+            
             escenarios.add(escenarioSinEntrada);
             
-            // Escenario 3: Plazo máximo para menor cuota
+            // Escenario 3: Plazo máximo extendido para lograr menor cuota mensual
+            // Típicamente los créditos vehiculares pueden extenderse hasta 60 o 72 meses como máximo
+            Integer plazoExtendido = Math.min(72, plazoMaximo + 24); // Extendemos el plazo en 2 años, máximo 72 meses
             Map<String, Object> escenarioPlazoMaximo = generarEscenario(
-                    "Plazo máximo", montoCredito, entrada, tasaAnual, 
-                    plazoMaximo, cuotaMaxima, ingresoNeto);
+                    "Plazo máximo para menor cuota", montoCredito, entrada, tasaAnual, 
+                    plazoExtendido, cuotaMaxima, ingresoNeto);
             escenarios.add(escenarioPlazoMaximo);
             
             resultado.put("montoVehiculo", montoVehiculo);
@@ -461,7 +483,14 @@ public class SolicitudCreditoService {
      */
     private BigDecimal calcularCuotaMensual(BigDecimal monto, BigDecimal tasaAnual, Integer plazo) {
         // Fórmula sistema francés: C = P * (i * (1 + i)^n) / ((1 + i)^n - 1)
+        // Donde i es la tasa mensual
         BigDecimal tasaMensual = tasaAnual.divide(new BigDecimal("12"), 10, RoundingMode.HALF_UP);
+        
+        // Convertir tasa de porcentaje a decimal si es necesario (ej. 0.115 para 11.5%)
+        if (tasaMensual.compareTo(BigDecimal.ONE) > 0) {
+            tasaMensual = tasaMensual.divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP);
+        }
+        
         BigDecimal numerador = tasaMensual.multiply(
                 BigDecimal.ONE.add(tasaMensual).pow(plazo, MathContext.DECIMAL64));
         BigDecimal denominador = BigDecimal.ONE.add(tasaMensual).pow(plazo, MathContext.DECIMAL64)
@@ -849,16 +878,50 @@ public class SolicitudCreditoService {
         BigDecimal cuotaFinal = cuotaPlazoMaximo;
         
         if (cuotaPlazoMaximo.compareTo(cuotaMaxima) > 0) {
-            // La cuota excede capacidad de pago, necesita más plazo o más entrada
-            escenario.put("advertencia", "La cuota excede capacidad de pago máxima");
+            // La cuota excede capacidad de pago, intentar ajustar el plazo
+            // Buscamos un plazo mayor que permita estar dentro de la capacidad de pago
+            Integer plazoNuevo = plazoMaximo;
+            BigDecimal cuotaNueva = cuotaPlazoMaximo;
+            boolean plazoAjustado = false;
+            
+            // Incrementar plazo hasta conseguir una cuota aceptable o llegar al límite (60 meses típicamente)
+            while (cuotaNueva.compareTo(cuotaMaxima) > 0 && plazoNuevo < 60) {
+                plazoNuevo += 6; // Incrementar en semestres
+                cuotaNueva = calcularCuotaMensual(montoCredito, tasaAnual, plazoNuevo);
+                if (cuotaNueva.compareTo(cuotaMaxima) <= 0) {
+                    plazoAjustado = true;
+                    plazoFinal = plazoNuevo;
+                    cuotaFinal = cuotaNueva;
+                    break;
+                }
+            }
+            
+            if (!plazoAjustado) {
+                // Si no se pudo ajustar el plazo, advertir que se necesita mayor entrada
+                escenario.put("advertencia", "La cuota excede capacidad de pago máxima. Se requiere mayor entrada o un préstamo menor.");
+            } else {
+                escenario.put("advertencia", "Se ajustó el plazo de " + plazoMaximo + " a " + plazoFinal + " meses para mantener la cuota dentro de capacidad de pago.");
+            }
         }
         
         escenario.put("plazoMeses", plazoFinal);
-        escenario.put("cuotaMensual", cuotaFinal);
-        escenario.put("totalPagar", cuotaFinal.multiply(new BigDecimal(plazoFinal)));
-        escenario.put("relacionCuotaIngreso", 
-                cuotaFinal.divide(ingresoNeto, 4, RoundingMode.HALF_UP).multiply(new BigDecimal("100")));
-                
+        escenario.put("cuotaMensual", cuotaFinal.setScale(2, RoundingMode.HALF_UP));
+        
+        // Calcular el total a pagar (capital + intereses)
+        BigDecimal totalPagar = cuotaFinal.multiply(new BigDecimal(plazoFinal)).setScale(2, RoundingMode.HALF_UP);
+        escenario.put("totalPagar", totalPagar);
+        
+        // Calcular el total de intereses a pagar
+        BigDecimal totalIntereses = totalPagar.subtract(montoCredito).setScale(2, RoundingMode.HALF_UP);
+        escenario.put("totalIntereses", totalIntereses);
+        
+        // Calcular relación cuota/ingreso
+        if (ingresoNeto.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal relacionCuotaIngreso = cuotaFinal.divide(ingresoNeto, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
+            escenario.put("relacionCuotaIngreso", relacionCuotaIngreso);
+        }
+            
         return escenario;
     }
     
