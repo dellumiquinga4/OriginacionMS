@@ -323,3 +323,181 @@ POST http://localhost:8080/v1/auditorias
   "fechaHora": "2024-06-01T12:00:00"
 }
 ```
+_________________________________________________________________________________
+# API de Originación - Endpoints por Controlador
+
+## URL base
+```
+http://localhost:8080/v1
+```
+
+---
+
+## 1. ClienteProspectoController
+
+### Registrar un Cliente Prospecto (POST)
+- **URL:** `POST /clientes-prospectos`
+- **Body (JSON):**
+```json
+{
+  "cedula": "0123456789",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "email": "juan.perez@email.com",
+  "telefono": "0999999999",
+  "direccion": "Av. Siempre Viva 123",
+  "actividadEconomica": "Empleado",
+  "ingresos": 1200.00,
+  "egresos": 400.00,
+  "estado": "PROSPECTO"
+}
+```
+
+### Obtener todos los clientes prospecto (GET)
+- **URL:** `GET /clientes-prospectos`
+- **Respuesta:**
+```json
+[
+  {
+    "id": 1,
+    "cedula": "0123456789",
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "email": "juan.perez@email.com",
+    "telefono": "0999999999",
+    "direccion": "Av. Siempre Viva 123",
+    "actividadEconomica": "Empleado",
+    "ingresos": 1200.00,
+    "egresos": 400.00,
+    "estado": "PROSPECTO",
+    "version": 0
+  }
+  // ... más clientes
+]
+```
+
+### Obtener cliente prospecto por cédula (GET)
+- **URL:** `GET /clientes-prospectos/cedula/{cedula}`
+
+### Validar información de un cliente (GET)
+- **URL:** `GET /clientes-prospectos/validar/{cedula}`
+
+### Actualizar información financiera (PUT)
+- **URL:** `PUT /clientes-prospectos/{id}/financiera?ingresos=1500&egresos=500`
+
+### Clasificar cliente (GET)
+- **URL:** `GET /clientes-prospectos/{cedula}/clasificar`
+
+### Ver historial del cliente (GET)
+- **URL:** `GET /clientes-prospectos/{cedula}/historial`
+
+### Validar capacidad financiera (GET)
+- **URL:** `GET /clientes-prospectos/{cedula}/capacidad-financiera?cuotaProyectada=300`
+
+---
+
+## 2. SolicitudCreditoController
+
+### Listar todas las solicitudes de crédito (GET)
+- **URL:** `GET /solicitudes-credito`
+
+```
+
+### Crear solicitud de crédito (POST)
+- **URL:** `POST /solicitudes-credito`
+- **Body (JSON):**
+```json
+{
+  "idClienteProspecto": 1,
+  "idVehiculo": 1,
+  "entrada": 2000.00,
+  "plazoMeses": 36,
+  "scoreExterno": 700.00
+}
+```
+
+### Obtener solicitud por número (GET)
+- **URL:** `GET /solicitudes-credito/numero/{numeroSolicitud}`
+
+### Listar solicitudes por cliente (GET)
+- **URL:** `GET /solicitudes-credito/cliente/{cedula}`
+
+### Listar solicitudes por estado (GET)
+- **URL:** `GET /solicitudes-credito/estado/{estado}`
+
+### Simular crédito (GET)
+- **URL:** `GET /solicitudes-credito/simular?idVehiculo=1&idClienteProspecto=1&plazoMaximo=36`
+
+### Actualizar solicitud de crédito (PUT)
+- **URL:** `PUT /solicitudes-credito/{id}`
+- **Body (JSON):**
+```json
+{
+  "idClienteProspecto": 1,
+  "idVehiculo": 1,
+  "entrada": 2500.00,
+  "plazoMeses": 48,
+  "scoreExterno": 720.00
+}
+```
+
+### Evaluar crédito automáticamente (POST)
+- **URL:** `POST /solicitudes-credito/{id}/evaluar`
+
+### Instrumentar crédito (POST)
+- **URL:** `POST /solicitudes-credito/{id}/instrumentar`
+
+---
+
+## 3. DocumentacionController
+
+### Cargar documento (POST)
+- **URL:** `POST /documentos`
+- **form-data:**
+  - idSolicitud: 1
+  - archivo: (adjuntar archivo PDF)
+  - idTipoDocumento: 1
+
+### Registrar documentos firmados (POST)
+- **URL:** `POST /documentos/firmados`
+- **form-data:**
+  - idSolicitud: 1
+  - documentos: (adjuntar uno o varios archivos PDF)
+
+### Listar documentos por solicitud (GET)
+- **URL:** `GET /documentos/solicitud/{idSolicitud}`
+
+### Obtener documento por ID (GET)
+- **URL:** `GET /documentos/{idDocumento}`
+
+### Eliminar documento (DELETE)
+- **URL:** `DELETE /documentos/{idDocumento}`
+
+### Verificar completitud documental (GET)
+- **URL:** `GET /documentos/solicitud/{idSolicitud}/completitud`
+
+### Configurar tipo de documento (POST)
+- **URL:** `POST /tipos-documentos`
+- **Body (JSON):**
+```json
+{
+  "nombre": "Contrato",
+  "descripcion": "Contrato obligatorio de crédito",
+  "estado": "ACTIVO"
+}
+```
+
+### Obtener tipos de documentos obligatorios (GET)
+- **URL:** `GET /tipos-documentos/obligatorios`
+
+### Obtener tipos de documentos por categoría (GET)
+- **URL:** `GET /tipos-documentos/categoria/{categoria}`
+
+### Activar tipo de documento (PATCH)
+- **URL:** `PATCH /tipos-documentos/{id}/activar`
+
+### Desactivar tipo de documento (PATCH)
+- **URL:** `PATCH /tipos-documentos/{id}/desactivar`
+
+---
+
