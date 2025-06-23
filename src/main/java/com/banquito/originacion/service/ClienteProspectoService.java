@@ -390,6 +390,15 @@ public class ClienteProspectoService {
         }
     }
 
+    /**
+     * Devuelve todos los clientes prospecto
+     */
+    public List<ClienteProspectoDTO> obtenerTodos() {
+        return clienteRepository.findAll().stream()
+                .map(clienteMapper::toDTO)
+                .toList();
+    }
+
     // === MÉTODOS PRIVADOS Y AUXILIARES ===
     
     /**

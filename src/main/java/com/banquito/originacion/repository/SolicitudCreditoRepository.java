@@ -49,11 +49,6 @@ public interface SolicitudCreditoRepository extends JpaRepository<SolicitudCredi
     List<SolicitudCredito> findByIdVehiculo(Integer idVehiculo);
 
     /**
-     * Busca solicitudes gestionadas por un vendedor específico
-     */
-    List<SolicitudCredito> findByIdVendedor(Integer idVendedor);
-
-    /**
      * Busca solicitudes con una relación cuota-ingreso menor o igual que el valor dado
      */
     List<SolicitudCredito> findByRelacionCuotaIngresoLessThanEqual(BigDecimal relacionMaxima);

@@ -134,6 +134,11 @@ public class SolicitudCreditoService {
                 }
             }
             
+            // Asignar scoreInterno si es nulo (por defecto igual al scoreExterno)
+            if (solicitudDTO.getScoreInterno() == null) {
+                solicitudDTO.setScoreInterno(solicitudDTO.getScoreExterno());
+            }
+            
             // Convertimos a entidad y guardamos
             SolicitudCredito solicitud = solicitudMapper.toModel(solicitudDTO);
             solicitud.setId(null); // Aseguramos que sea nuevo
@@ -718,6 +723,13 @@ public class SolicitudCreditoService {
         } catch (Exception e) {
             throw new RuntimeException("Error al buscar solicitudes por filtros: " + e.getMessage(), e);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitudCreditoDTO> listarTodas() {
+        return solicitudRepository.findAll().stream()
+                .map(solicitudMapper::toDTO)
+                .toList();
     }
 
     // === MÉTODOS AUXILIARES Y PRIVADOS ===

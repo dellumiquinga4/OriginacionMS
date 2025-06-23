@@ -26,9 +26,6 @@ public class SolicitudCredito {
     @Column(name = "id_vehiculo", nullable = false)
     private Integer idVehiculo;
 
-    @Column(name = "id_vendedor", nullable = false)
-    private Integer idVendedor;
-
     @Column(name = "numero_solicitud", length = 50, nullable = false, unique = true)
     private String numeroSolicitud;
 
@@ -77,10 +74,6 @@ public class SolicitudCredito {
     @JoinColumn(name = "id_vehiculo", referencedColumnName = "id_vehiculo", insertable = false, updatable = false)
     private Vehiculo vehiculo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_vendedor", referencedColumnName = "id_vendedor", insertable = false, updatable = false)
-    private Vendedor vendedor;
-
     public SolicitudCredito() {
     }
 
@@ -107,7 +100,6 @@ public class SolicitudCredito {
                 "id=" + id +
                 ", idClienteProspecto=" + idClienteProspecto +
                 ", idVehiculo=" + idVehiculo +
-                ", idVendedor=" + idVendedor +
                 ", numeroSolicitud='" + numeroSolicitud + '\'' +
                 ", montoSolicitado=" + montoSolicitado +
                 ", plazoMeses=" + plazoMeses +
