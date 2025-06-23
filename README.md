@@ -381,6 +381,7 @@ POST http://localhost:8080/v1/auditorias
   "idVehiculo": 1,
   "entrada": 2000.00,
   "plazoMeses": 36,
+  "scoreInterno": 750.00,
   "scoreExterno": 700.00,
   "idVendedor": 1
 }
