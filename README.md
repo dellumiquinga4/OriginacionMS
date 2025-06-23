@@ -323,16 +323,6 @@ POST http://localhost:8080/v1/auditorias
   "fechaHora": "2024-06-01T12:00:00"
 }
 ```
-_________________________________________________________________________________
-# API de Originación - Endpoints por Controlador
-
-## URL base
-```
-http://localhost:8080/v1
-```
-
----
-
 ## 1. ClienteProspectoController
 
 ### Registrar un Cliente Prospecto (POST)
